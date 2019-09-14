@@ -51,6 +51,15 @@ jobs:
           name: Run Tests
           command: cd ./java && ./gradlew test
 
+  test-haskell:
+    docker:
+      - image: fpco/stack-build:lts
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          command: stack --no-terminal test
+
 workflows:
   version: 2
   build_and_test:
