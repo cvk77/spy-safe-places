@@ -23,9 +23,9 @@ spec = do
 
     describe "Find safe spaces in the city based on agent locations" $ do
         it "returns correct result for six agents at specified locations" $ do
-            findSafeSpaces [(1, 1), (3, 5), (4, 8), (7, 3), (7, 8), (9, 1)] `shouldBe` [(0, 9), (0, 7), (5, 0)]
-            findSafeSpaces [(0, 0), (0, 9), (1, 5), (5, 1), (9, 0), (9, 9)] `shouldBe` [(5, 7), (6, 6), (7, 5)]
-            findSafeSpaces [(0, 0)] `shouldBe` [(9, 9)]
+            findSafeSpaces [(1, 1), (3, 5), (4, 8), (7, 3), (7, 8), (9, 1)] `shouldMatchList` [(0, 9), (0, 7), (5, 0)]
+            findSafeSpaces [(0, 0), (0, 9), (1, 5), (5, 1), (9, 0), (9, 9)] `shouldMatchList` [(5, 7), (6, 6), (7, 5)]
+            findSafeSpaces [(0, 0)] `shouldMatchList` [(9, 9)]
 
     describe "Handle edge cases and offering recommendations" $ do
         it "works for no safe locations" $ do
@@ -42,16 +42,17 @@ spec = do
                             ] `shouldBe` NoSafeSpaces
 
         it "works for six agents at specified locations" $ do
-            adviceForAlex [ "B2", "D6", "E9", "H4", "H9", "J2" ]
-                `shouldBe` SafeSpaces [ "A10", "A8", "F1" ]
+            let SafeSpaces result = adviceForAlex [ "B2", "D6", "E9", "H4", "H9", "J2" ]
+            result `shouldMatchList` [ "A10", "A8", "F1" ]
+            
 
         it "works for seven agents at specified locations" $ do
-            adviceForAlex [ "B4", "C4", "C8", "E2", "F10", "H1", "J6" ]
-                `shouldBe` SafeSpaces [ "A1", "A10", "E6", "F5", "F6", "G4", "G5","G7", "H8", "I9", "J10" ]
+            let SafeSpaces result = adviceForAlex [ "B4", "C4", "C8", "E2", "F10", "H1", "J6" ]
+            result `shouldMatchList` [ "A1", "A10", "E6", "F5", "F6", "G4", "G5","G7", "H8", "I9", "J10" ]
 
         it "works for six agents at different specified locations" $ do
-            adviceForAlex [ "A1", "A10", "B6", "F2", "J1", "J10" ]
-                `shouldBe` SafeSpaces [ "F8", "G7", "H6" ]
+            let SafeSpaces result = adviceForAlex [ "A1", "A10", "B6", "F2", "J1", "J10" ]
+            result `shouldMatchList` [ "F8", "G7", "H6" ]
 
         it "works for only one agent" $ do
             adviceForAlex [ "A1" ] `shouldBe` SafeSpaces [ "J10" ]
