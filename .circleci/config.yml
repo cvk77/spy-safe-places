@@ -68,4 +68,5 @@ workflows:
       - test-javascript
       - test-python
       - test-java
+      - test-haskell
 
