@@ -60,7 +60,7 @@ between lowerBound upperBound value =
 -- | This method should take a two-dimensional, zero-based representation of coordinates for the agents locations and
 -- find the safest places for Alex in a two-dimensional, zero-based representation of coordinates
 findSafeSpaces
-    :: [Coordinates] -- ^ a list of coordinates for the agents locations
+    :: [Coordinates] -- ^ a list of coordinates for the agent locations
     -> [Coordinates] -- ^ a list of coordinates for the safest places for alex
 findSafeSpaces agents =
     fmap fst $ filter (\(_, v) -> v == safest && v > 0) $ assocs grid
@@ -68,7 +68,7 @@ findSafeSpaces agents =
     grid   = foldl gridFor emptyGrid agents
     safest = maximum grid
 
--- | Build a grid for a single agnet position
+-- | Build a grid for a single agent position
 gridFor :: Grid -> Coordinates -> Grid
 gridFor baseGrid agentPosition = accum
     (min)
