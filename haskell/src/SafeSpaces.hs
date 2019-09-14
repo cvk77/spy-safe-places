@@ -9,13 +9,12 @@ where
 import           Text.Read                      ( readMaybe )
 import           Control.Monad                  ( mfilter )
 import           Data.Maybe                     ( catMaybes )
-import           Data.Char                      ( chr
-                                                , intToDigit 
-                                                )
+import           Data.Char                      ( chr )
 import           Data.Array                     ( array
                                                 , Array
                                                 , accum
                                                 , assocs
+                                                , inRange
                                                 )
 
 -- Search result and advice for Alex
@@ -43,19 +42,14 @@ convertCoordinates = catMaybes . map convertCoordinate
     convertCoordinate _       = Nothing
 
     convertY :: Char -> Maybe Int
-    convertY c | between 'A' 'J' c = Just $ (fromEnum c) - 65
-               | otherwise         = Nothing
+    convertY c | inRange ('A', 'J') c = Just $ (fromEnum c) - 65
+               | otherwise            = Nothing
 
     convertX :: String -> Maybe Int
-    convertX = fmap (subtract 1) . mfilter (between 1 10) . readMaybe
+    convertX = fmap (subtract 1) . mfilter (inRange (1, 10)) . readMaybe
 
 showCoordinates :: Coordinates -> String
 showCoordinates (y, x) = chr (y + 65) : (show $ x + 1)
-
--- | Return whether or not a value is betwwen lowerBound and upperBound
-between :: Ord a => a -> a -> a -> Bool
-between lowerBound upperBound value =
-    value >= lowerBound && value <= upperBound
 
 -- | This method should take a two-dimensional, zero-based representation of coordinates for the agents locations and
 -- find the safest places for Alex in a two-dimensional, zero-based representation of coordinates
