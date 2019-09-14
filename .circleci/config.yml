@@ -58,7 +58,7 @@ jobs:
       - checkout
       - run:
           name: Run tests
-          command: stack --no-terminal test
+          command: cd ./haskell && stack --no-terminal test
 
 workflows:
   version: 2
