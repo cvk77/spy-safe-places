@@ -1,7 +1,7 @@
 module SafeSpacesSpec where
 
 import Test.Hspec
-import SafeSpaces (convertCoordinates, findSafeSpaces, adviceForAlex, Advice(..))
+import SafeSpaces (convertCoordinates, findSafeSpaces, adviceForAlex, SearchResult(..))
 
 main :: IO ()
 main = hspec spec
