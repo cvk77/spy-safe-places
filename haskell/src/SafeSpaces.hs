@@ -30,8 +30,8 @@ type Coordinates = (Int, Int)
 type Grid = Array (Int, Int) Int
 
 -- | This method should convert an one dimensional Array with alphanumeric coordinates (e.g. ["A1"]) to a
--- two-dimensional, zero-based representation of the coordinates
--- For example the input of ["A6"] should lead to [[0,5]]
+-- list of tuples containing a zero-based representation of the coordinates
+-- For example the input of ["A6"] should lead to [(0,5)].
 convertCoordinates
   :: [String]      -- ^ An alphanumeric representation of coordinates e.g. ["A1", "D1"]
   -> [Coordinates] -- ^ Zero-based representation of the coordinates (e.g. [(0,0),(3,0)]
