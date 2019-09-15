@@ -7,14 +7,18 @@ module SafeSpaces
 where
 
 import           Text.Read                      ( readMaybe )
-import           Control.Monad                  ( mfilter )
-import           Data.Maybe                     ( catMaybes )
+import           Control.Monad                  ( MonadPlus
+                                                , mfilter 
+                                                , ap
+                                                )
+import           Data.Maybe                     ( mapMaybe )
 import           Data.Char                      ( chr )
 import           Data.Array                     ( array
                                                 , Array
                                                 , accum
                                                 , assocs
                                                 , inRange
+                                                , indices
                                                 )
 
 -- Search result and advice for Alex
@@ -35,13 +39,16 @@ type Grid = Array (Int, Int) Int
 convertCoordinates
   :: [String]      -- ^ An alphanumeric representation of coordinates e.g. ["A1", "D1"]
   -> [Coordinates] -- ^ Zero-based representation of the coordinates (e.g. [(0,0),(3,0)]
-convertCoordinates = catMaybes . map convertCoordinate
+convertCoordinates = mapMaybe convertSingleCoordinates
  where
-  convertCoordinate (y : x) = (,) <$> convertY y <*> convertX x
-  convertCoordinate _       = Nothing
-  convertY c | inRange ('A', 'J') c = Just $ (fromEnum c) - 65
-             | otherwise            = Nothing
-  convertX = fmap (subtract 1) . mfilter (inRange (1, 10)) . readMaybe
+  convertSingleCoordinates (y : x) = (,) <$> convertY y <*> convertX x
+  convertSingleCoordinates _       = Nothing
+  convertY = mapFilter (subtract 65 . fromEnum) (inRange('A', 'J')) . Just
+  convertX = mapFilter (subtract 1)             (inRange(1, 10))    . readMaybe
+
+-- | Filters, then maps
+mapFilter :: MonadPlus m => (a -> b) -> (a -> Bool) -> m a -> m b
+mapFilter m f = fmap m . mfilter f
 
 -- | This method should take a two-dimensional, zero-based representation of coordinates for the agents locations and
 -- find the safest places for Alex in a two-dimensional, zero-based representation of coordinates
@@ -53,16 +60,21 @@ findSafeSpaces agents =
  where
   grid   = foldl gridFor emptyGrid agents
   safest = maximum grid
-  emptyGrid =
-    array ((0, 0), (9, 9)) [ ((y, x), 99) | y <- [0 .. 9], x <- [0 .. 9] ]
+
+-- | Construct an empty grid initialized with 99
+emptyGrid :: Grid
+emptyGrid = array ((0, 0), (9, 9)) [ ((y, x), 99) | y <- [0 .. 9], x <- [0 .. 9] ]
 
 -- | Build a grid for a single agent position
 gridFor :: Grid -> Coordinates -> Grid
 gridFor baseGrid agentPosition = accum
-  (min)
+  min
   baseGrid
-  [ ((y, x), distance (y, x) agentPosition) | y <- [0 .. 9], x <- [0 .. 9] ]
-  where distance (y1, x1) (y2, x2) = abs (x2 - x1) + abs (y2 - y1)
+  (fmap ((,) `ap` distance agentPosition) $ indices emptyGrid)
+
+-- | Calculate distance between two coordinates
+distance :: Coordinates -> Coordinates -> Int
+distance (y1, x1) (y2, x2) = abs (x2 - x1) + abs (y2 - y1)
 
 -- | This method should take an array of alphanumeric agent locations and offer advice to Alex for where she
 -- should hide out in the city, with special advice for edge cases
@@ -76,4 +88,4 @@ adviceForAlex agentPositions = case length safeSpaces of
  where
   agentPositions' = convertCoordinates agentPositions
   safeSpaces      = fmap showCoordinates $ findSafeSpaces agentPositions'
-  showCoordinates (y, x) = chr (y + 65) : (show $ x + 1)
+  showCoordinates (y, x) = chr (y + 65) : show (x + 1)
