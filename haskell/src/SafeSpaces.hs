@@ -70,7 +70,7 @@ gridFor :: Grid -> Coordinates -> Grid
 gridFor baseGrid agentPosition = accum
   min
   baseGrid
-  (fmap ((,) `ap` distance agentPosition) $ indices emptyGrid)
+  (fmap ((,) `ap` distance agentPosition) $ indices baseGrid)
 
 -- | Calculate distance between two coordinates
 distance :: Coordinates -> Coordinates -> Int
