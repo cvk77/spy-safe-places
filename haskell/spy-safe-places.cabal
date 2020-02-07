@@ -1,10 +1,7 @@
 name:                spy-safe-places
 version:             0.1.0.0
--- synopsis:
--- description:
 homepage:            https://github.com/cvk77/spy-safe-places
 license:             BSD3
-license-file:        LICENSE
 author:              Christoph von Krüchten
 maintainer:          cvk@treestack.de
 copyright:           2019 Treestack GmbH
